@@ -1,11 +1,6 @@
 // https://ckeditor.com/docs/ckeditor5/latest/framework/deep-dive/upload-adapter.html
 
 import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
-import {
-  EditorConfig,
-  PluginConstructor,
-  Editor,
-} from "@ckeditor/ckeditor5-core";
 
 class MyUploadAdapter {
   loader: any;
@@ -31,25 +26,28 @@ class MyUploadAdapter {
     return this.loader.file.then(
       (file: File) =>
         new Promise((resolve, reject) => {
-          const reader = new window.FileReader();
+          const reader = new FileReader();
 
-          reader.addEventListener("load", () => {
+          reader.onloadend = () => {
             resolve({ default: reader.result });
-          });
+          };
 
-          reader.addEventListener("error", (err) => {
+          reader.onerror = (err) => {
             reject(err);
-          });
+          };
 
-          reader.addEventListener("abort", () => {
+          reader.onabort = () => {
             reject();
-          });
+          };
 
-          this.loader.file.then((file: File) => {
-            reader.readAsDataURL(file);
-          });
+          reader.readAsDataURL(file);
         })
     );
+  }
+
+  abort() {
+    // 實作刪除
+    console.log("abort");
   }
 }
 
