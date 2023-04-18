@@ -8,6 +8,7 @@ import {
   EditorConfig,
   PluginConstructor,
 } from "@ckeditor/ckeditor5-core";
+import "./custom.css";
 
 type Props = {
   defaultValue?: string;

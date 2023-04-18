@@ -1,6 +1,7 @@
 // https://ckeditor.com/docs/ckeditor5/latest/framework/deep-dive/upload-adapter.html
 
 import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
+import axios from "axios";
 
 class MyUploadAdapter {
   loader: any;
@@ -26,23 +27,39 @@ class MyUploadAdapter {
     return this.loader.file.then(
       (file: File) =>
         new Promise((resolve, reject) => {
-          const reader = new FileReader();
+          const fd = new FormData();
 
-          reader.onloadend = () => {
-            resolve({ default: reader.result });
-          };
+          fd.append("file", file);
 
-          reader.onerror = (err) => {
-            reject(err);
-          };
-
-          reader.onabort = () => {
-            reject();
-          };
-
-          reader.readAsDataURL(file);
+          axios
+            .post("http://localhost:3000/upload", fd, {
+              onUploadProgress: (progressEvent) => {
+                this.loader.uploadTotal = progressEvent.total;
+                this.loader.uploaded = progressEvent.loaded;
+              },
+            })
+            .then((data: any) => {
+              console.log(data)
+              resolve({ default: data.data.url });
+            })
+            .catch((err: any) => {
+              reject(err);
+            });
         })
     );
+
+    // return this.loader.file.then((file: File) => {
+    //   const fd = new FormData
+
+    //   fd.append('file', file)
+
+    //   return axios.post("http://localhost:3000/upload", fd, {
+    //     onUploadProgress: progressEvent => {
+    //      this.loader.uploadTotal = progressEvent.total;
+    //      this.loader.uploaded = progressEvent.loaded;
+    //     }
+    //   })
+    // });
   }
 
   abort() {
