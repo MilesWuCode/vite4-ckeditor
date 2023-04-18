@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 400 * 1000, // 限制檔案大小為1MB
+    fileSize: 1024 * 1000, // 限制檔案大小為1MB
   },
   fileFilter: (req, file, cb) => {
     if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
